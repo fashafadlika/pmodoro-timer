@@ -132,27 +132,23 @@ closeSettings.addEventListener("click", () => {
 
 // ------------------- CUSTOM TIMER -------------------
 applyBtn.addEventListener("click", async () => {
-    // Ambil nilai terbaru dari input
     const focusMinutes = parseInt(focusInput.value);
     const shortMinutes = parseInt(shortInput.value);
     const longMinutes = parseInt(longInput.value);
 
-    // Update data-min tombol mode
-    document.querySelector('.mode[data-min="25"]').dataset.min = focusMinutes;
-    document.querySelector('.mode[data-min="5"]').dataset.min = shortMinutes;
-    document.querySelector('.mode[data-min="10"]').dataset.min = longMinutes;
+    const modeButtonsArr = document.querySelectorAll(".mode");
+    modeButtonsArr[0].dataset.min = focusMinutes;
+    modeButtonsArr[1].dataset.min = shortMinutes;
+    modeButtonsArr[2].dataset.min = longMinutes;
 
-    // Reset timer sesuai mode aktif
     const activeMode = document.querySelector(".mode.active");
     const mode = activeMode.textContent.toLowerCase().replace(" ", "_");
     const duration = parseInt(activeMode.dataset.min);
 
-    // Hentikan timer frontend & backend sebelum update
     clearInterval(timerInterval);
     isRunning = false;
     startPauseBtn.textContent = "Start";
 
-    // Reset backend timer
     try {
         const remaining = await resetTimerBackend(mode, duration);
         updateDisplay(remaining);
@@ -160,9 +156,9 @@ applyBtn.addEventListener("click", async () => {
         console.error("Gagal reset backend timer:", err);
     }
 
-    // Tutup panel settings
     settingsPanel.classList.remove("open");
 });
+
 
 // ------------------- INITIAL RENDER -------------------
 (async () => {
