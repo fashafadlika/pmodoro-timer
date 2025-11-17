@@ -4,7 +4,7 @@ Pmodoro adalah aplikasi timer sederhana yang dibuat untuk membantu kamu fokus be
 Aplikasi ini berjalan menggunakan HTML, CSS, JavaScript, dan dapat dijalankan sebagai aplikasi lokal atau dipublikasikan melalui GitHub Pages.
 
 Live Demo (GitHub Pages):
-https://username.github.io/pmodoro-timer/](https://fashafadlika.github.io/pmodoro-timer/
+https://fashafadlika.github.io/pmodoro-timer/
 
 Tools dan Bahasa Yang Digunakan
 
