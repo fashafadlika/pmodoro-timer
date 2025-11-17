@@ -4,29 +4,28 @@ Pmodoro adalah aplikasi timer sederhana yang dibuat untuk membantu kamu fokus be
 Aplikasi ini berjalan menggunakan HTML, CSS, JavaScript, dan dapat dijalankan sebagai aplikasi lokal atau dipublikasikan melalui GitHub Pages.
 
 Live Demo (GitHub Pages):
-
 https://username.github.io/pmodoro-timer/](https://fashafadlika.github.io/pmodoro-timer/
 
 Tools dan Bahasa Yang Digunakan
 
-HTML5
+- HTML5
 
-CSS3 (Glassmorphism, gradients, responsive layout)
+- CSS3 (Glassmorphism, gradients, responsive layout)
 
-JavaScript (timer logic)
+- JavaScript (timer logic)
 
-Python (pywebview)
+- Python (pywebview)
 
 Fitur Utama
 
-Timer Fokus
+- Timer Fokus
 Hitung mundur untuk sesi kerja agar fokus tetap terjaga.
 
-Short Break / Long Break
+- Short Break / Long Break
 Mode istirahat pendek & panjang agar ritme kerja lebih seimbang.
 
-UI Modern & Estetis
+- UI Modern & Estetis
 Desain ungu–hitam futuristik dengan efek glassmorphism.
 
-Kontrol Cepat
+- Kontrol Cepat
 Start, Pause, dan Reset dalam satu klik.
