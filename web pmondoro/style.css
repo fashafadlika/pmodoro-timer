@@ -29,8 +29,20 @@ color:#fff;overflow:hidden;
 .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:white;padding:12px 22px;border-radius:28px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(107,45,255,0.18)}
 .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);box-shadow:none}
 .modes{display:flex;justify-content:center;gap:10px;margin-top:16px}
-.mode{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:12px;cursor:pointer}
-.mode.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+
+.mode{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    padding:8px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    color:white;
+}
+
+.mode.active{
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:white;
+}
 .settings{margin-top:12px;text-align:center;color:rgba(255,255,255,0.7)}
 .right-graphic{position:absolute;right:40px;bottom:20px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle at 30% 30%, rgba(139,60,255,0.25), transparent 20%), linear-gradient(180deg, rgba(107,45,255,0.18), transparent);filter:blur(24px);opacity:0.9}
 
