@@ -99,7 +99,7 @@ applyBtn.addEventListener("click", () => {
     // Update data-min pada tombol mode
     document.querySelector('.mode[data-min="25"]').dataset.min = focusMinutes;
     document.querySelector('.mode[data-min="5"]').dataset.min = shortMinutes;
-    document.querySelector('.mode[data-min="15"]').dataset.min = longMinutes;
+    document.querySelector('.mode[data-min="10"]').dataset.min = longMinutes;
 
     // Reset timer sesuai mode aktif
     const active = document.querySelector(".mode.active");
@@ -115,3 +115,4 @@ applyBtn.addEventListener("click", () => {
 });
 
 updateDisplay();
+
