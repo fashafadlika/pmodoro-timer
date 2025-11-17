@@ -1,55 +1,49 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Pmodoro</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
     <header class="nav">
-      <div class="logo">Kelompok 5</div>
-      <nav>
+        <div class="logo">Kelompok 5</div>
+        <nav>
         <a href="#">Settings</a>
-      </nav>
+        </nav>
     </header>
 
     <main class="hero">
-      <div class="left-vertical">Live Incredible Day</div>
+        <div class="left-vertical">Live Incredible Day</div>
 
-      <div class="content">
-        <h1 class="title">
-          <span class="big">PMODORO</span><span class="outline"></span>
-        </h1>
-        <p class="subtitle">Fokus 25 menit • Istirahat 5 menit</p>
+        <div class="content">
+            <h1 class="title"><span class="big">PMODORO</span><span class="outline"></span></h1>
+            <p class="subtitle">Fokus 25 menit • Istirahat 5 menit</p>
 
-        <div class="card">
-          <div id="timer" class="timer">25:00</div>
+            <div class="card">
+                <div id="timer" class="timer">25:00</div>
 
-          <div class="controls">
-            <button id="startBtn" class="btn">Start</button>
-            <button id="pauseBtn" class="btn secondary">Pause</button>
-            <button id="resetBtn" class="btn secondary">Reset</button>
-          </div>
+                <div class="controls">
+                    <button id="startPauseBtn" class="btn">Start</button>
+                    <button id="resetBtn" class="btn secondary">Reset</button>
+                </div>
 
-          <div class="modes">
-            <button class="mode active" id="modeFocus" data-min="25">Pmodoro</button>
-            <button class="mode" id="modeShort" data-min="5">Short Break</button>
-            <button class="mode" id="modeLong" data-min="15">Long Break</button>
-          </div>
+                <div class="modes">
+                    <button class="mode active" id="modeFocus" data-min="25">Pmodoro</button>
+                    <button class="mode" id="modeShort" data-min="5">Short Break</button>
+                    <button class="mode" id="modeLong" data-min="15">Long Break</button>
+                </div>
 
-          <div class="settings">
-            <label
-              >Rounds:
-              <input id="rounds" type="number" value="4" min="1" max="12"
-            /></label>
-          </div>
+                <div class="settings">
+                    <label>Rounds: <input id="rounds" type="number" value="4" min="1" max="12"></label>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <div class="right-graphic"></div>
+        <div class="right-graphic"></div>
     </main>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
