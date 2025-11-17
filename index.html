@@ -30,19 +30,48 @@
                 </div>
 
                 <div class="modes">
-                    <button class="mode active" id="modeFocus" data-min="25">Pmodoro</button>
-                    <button class="mode" id="modeShort" data-min="5">Short Break</button>
-                    <button class="mode" id="modeLong" data-min="15">Long Break</button>
-                </div>
-
-                <div class="settings">
-                    <label>Rounds: <input id="rounds" type="number" value="4" min="1" max="12"></label>
+                    <button class="mode active" data-min="25">Pmodoro</button>
+                    <button class="mode" data-min="5">Short Break</button>
+                    <button class="mode" data-min="10">Long Break</button>
                 </div>
             </div>
         </div>
 
         <div class="right-graphic"></div>
     </main>
+
+    <div id="settingsPanel" class="settings-panel">
+        <div class="settings-content">
+
+            <h2>Pengaturan Waktu</h2>
+
+            <label>
+                Focus (menit):
+                <input id="focusInput" type="number" min="1" max="120" value="25">
+            </label>
+
+            <label>
+                Short Break (menit):
+                <input id="shortInput" type="number" min="1" max="60" value="5">
+            </label>
+
+            <label>
+                Long Break (menit):
+                <input id="longInput" type="number" min="1" max="60" value="15">
+            </label>
+
+            <label>
+                Rounds:
+                <input id="rounds" type="number" min="1" max="12" value="4">
+            </label>
+
+            <div class="settings-buttons">
+                <button id="applyBtn" class="btn">Apply</button>
+                <button id="closeSettings" class="btn secondary">Close</button>
+            </div>
+
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
