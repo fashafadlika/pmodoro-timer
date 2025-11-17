@@ -16,6 +16,8 @@ Tools dan Bahasa Yang Digunakan
 
 - Python (pywebview)
 
+- FastAPI
+
 Fitur Utama
 
 - Timer Fokus
