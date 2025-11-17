@@ -1,3 +1,7 @@
+let focusMinutes = 25;
+let shortMinutes = 5;
+let longMinutes = 10;
+
 let timeLeft = 25 * 60;
 let timerInterval = null;
 let isRunning = false;
@@ -6,6 +10,11 @@ const timerDisplay = document.getElementById("timer");
 const startPauseBtn = document.getElementById("startPauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 const modeButtons = document.querySelectorAll(".mode");
+
+const focusInput = document.getElementById("focusInput");
+const shortInput = document.getElementById("shortInput");
+const longInput = document.getElementById("longInput");
+const applyBtn = document.getElementById("applyBtn");
 
 function updateDisplay() {
     const m = Math.floor(timeLeft / 60);
@@ -65,6 +74,44 @@ modeButtons.forEach(btn => {
         timeLeft = parseInt(btn.dataset.min) * 60;
         updateDisplay();
     });
+});
+
+// SETTINGS PANEL
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.querySelector(".nav nav a");
+const closeSettings = document.getElementById("closeSettings");
+
+openSettings.addEventListener("click", (e) => {
+    e.preventDefault();
+    settingsPanel.classList.add("open");
+});
+
+closeSettings.addEventListener("click", () => {
+    settingsPanel.classList.remove("open");
+});
+
+// UNTUK CUSTOM TIMER
+applyBtn.addEventListener("click", () => {
+    focusMinutes = parseInt(focusInput.value);
+    shortMinutes = parseInt(shortInput.value);
+    longMinutes = parseInt(longInput.value);
+
+    // Update data-min pada tombol mode
+    document.querySelector('.mode[data-min="25"]').dataset.min = focusMinutes;
+    document.querySelector('.mode[data-min="5"]').dataset.min = shortMinutes;
+    document.querySelector('.mode[data-min="15"]').dataset.min = longMinutes;
+
+    // Reset timer sesuai mode aktif
+    const active = document.querySelector(".mode.active");
+    timeLeft = parseInt(active.dataset.min) * 60;
+
+    pauseTimer();
+    isRunning = false;
+    startPauseBtn.textContent = "Start";
+    updateDisplay();
+
+    // Tutup panel setelah apply
+    settingsPanel.classList.remove("open");
 });
 
 updateDisplay();
