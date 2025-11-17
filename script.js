@@ -1,17 +1,11 @@
-let timeLeft = 25 * 60; // default mode = 25 menit
+let timeLeft = 25 * 60;
 let timerInterval = null;
-let isRunning = false; // untuk toggle start/pause
+let isRunning = false;
 
 const timerDisplay = document.getElementById("timer");
-const startBtn = document.getElementById("startBtn");
-const pauseBtn = document.getElementById("pauseBtn");
+const startPauseBtn = document.getElementById("startPauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 const modeButtons = document.querySelectorAll(".mode");
-
-// --- Sembunyikan tombol pause karena kita gabungkan ke Start ---
-pauseBtn.style.display = "none";
-
-// ---------------- TIMER FUNCTIONS ----------------
 
 function updateDisplay() {
     const m = Math.floor(timeLeft / 60);
@@ -27,7 +21,7 @@ function startTimer() {
         } else {
             clearInterval(timerInterval);
             isRunning = false;
-            startBtn.textContent = "Start";
+            startPauseBtn.textContent = "Start";
         }
     }, 1000);
 }
@@ -36,37 +30,29 @@ function pauseTimer() {
     clearInterval(timerInterval);
 }
 
-// ---------------- BUTTON LOGIC ----------------
-
-// Start/Pause digabung menjadi satu
-startBtn.addEventListener("click", () => {
+startPauseBtn.addEventListener("click", () => {
     if (!isRunning) {
-        // Mode START
         startTimer();
-        startBtn.textContent = "Pause";
+        startPauseBtn.textContent = "Pause";
         isRunning = true;
     } else {
-        // Mode PAUSE
         pauseTimer();
-        startBtn.textContent = "Start";
+        startPauseBtn.textContent = "Start";
         isRunning = false;
     }
 });
 
-// Reset
 resetBtn.addEventListener("click", () => {
     pauseTimer();
     isRunning = false;
-    startBtn.textContent = "Start";
+    startPauseBtn.textContent = "Start";
 
-    // Reset berdasarkan mode aktif
     const activeMode = document.querySelector(".mode.active");
     timeLeft = parseInt(activeMode.dataset.min) * 60;
 
     updateDisplay();
 });
 
-// Ganti mode (25, 5, 15 menit)
 modeButtons.forEach(btn => {
     btn.addEventListener("click", () => {
         modeButtons.forEach(b => b.classList.remove("active"));
@@ -74,12 +60,11 @@ modeButtons.forEach(btn => {
 
         pauseTimer();
         isRunning = false;
-        startBtn.textContent = "Start";
+        startPauseBtn.textContent = "Start";
 
         timeLeft = parseInt(btn.dataset.min) * 60;
         updateDisplay();
     });
 });
 
-// Tampilkan waktu awal (25:00)
 updateDisplay();
