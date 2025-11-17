@@ -1,60 +1,85 @@
-let defaultMinutes = 25;
-function stop(){
-clearInterval(interval);
-interval = null;
-running = false;
+let timeLeft = 25 * 60; // default mode = 25 menit
+let timerInterval = null;
+let isRunning = false; // untuk toggle start/pause
+
+const timerDisplay = document.getElementById("timer");
+const startBtn = document.getElementById("startBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const resetBtn = document.getElementById("resetBtn");
+const modeButtons = document.querySelectorAll(".mode");
+
+// --- Sembunyikan tombol pause karena kita gabungkan ke Start ---
+pauseBtn.style.display = "none";
+
+// ---------------- TIMER FUNCTIONS ----------------
+
+function updateDisplay() {
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-
-function reset(){
-stop();
-seconds = defaultMinutes * 60;
-update();
+function startTimer() {
+    timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay();
+        } else {
+            clearInterval(timerInterval);
+            isRunning = false;
+            startBtn.textContent = "Start";
+        }
+    }, 1000);
 }
 
-
-startBtn.addEventListener('click',()=>{start();});
-pauseBtn.addEventListener('click',()=>{stop();});
-resetBtn.addEventListener('click',()=>{reset();});
-
-
-modeButtons.forEach(btn=>{
-btn.addEventListener('click',()=>{
-modeButtons.forEach(b=>b.classList.remove('active'));
-btn.classList.add('active');
-defaultMinutes = parseInt(btn.dataset.min);
-seconds = defaultMinutes * 60;
-update();
-stop();
-})
-})
-
-
-function beep(){
-try{
-const ctx = new (window.AudioContext || window.webkitAudioContext)();
-const o = ctx.createOscillator();
-const g = ctx.createGain();
-o.type = 'sine';
-o.frequency.value = 880;
-o.connect(g);
-g.connect(ctx.destination);
-g.gain.setValueAtTime(0.0001, ctx.currentTime);
-g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
-o.start();
-o.stop(ctx.currentTime + 0.6);
-}catch(e){
-console.warn('Audio not supported', e);
-}
+function pauseTimer() {
+    clearInterval(timerInterval);
 }
 
+// ---------------- BUTTON LOGIC ----------------
 
-function flashCard(){
-const card = document.querySelector('.card');
-card.style.boxShadow = '0 0 0 4px rgba(139,60,255,0.12)';
-setTimeout(()=>{card.style.boxShadow='none'},600);
-}
+// Start/Pause digabung menjadi satu
+startBtn.addEventListener("click", () => {
+    if (!isRunning) {
+        // Mode START
+        startTimer();
+        startBtn.textContent = "Pause";
+        isRunning = true;
+    } else {
+        // Mode PAUSE
+        pauseTimer();
+        startBtn.textContent = "Start";
+        isRunning = false;
+    }
+});
 
+// Reset
+resetBtn.addEventListener("click", () => {
+    pauseTimer();
+    isRunning = false;
+    startBtn.textContent = "Start";
 
-// initial render
-update();
+    // Reset berdasarkan mode aktif
+    const activeMode = document.querySelector(".mode.active");
+    timeLeft = parseInt(activeMode.dataset.min) * 60;
+
+    updateDisplay();
+});
+
+// Ganti mode (25, 5, 15 menit)
+modeButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        modeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        pauseTimer();
+        isRunning = false;
+        startBtn.textContent = "Start";
+
+        timeLeft = parseInt(btn.dataset.min) * 60;
+        updateDisplay();
+    });
+});
+
+// Tampilkan waktu awal (25:00)
+updateDisplay();
