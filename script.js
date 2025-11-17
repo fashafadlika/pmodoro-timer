@@ -1,121 +1,171 @@
-    let focusMinutes = 25;
-    let shortMinutes = 5;
-    let longMinutes = 10;
+// ------------------- TIMER VARIABLES -------------------
+let timerInterval = null;
+let isRunning = false;
 
-    let timeLeft = 25 * 60;
-    let timerInterval = null;
-    let isRunning = false;
+const timerDisplay = document.getElementById("timer");
+const startPauseBtn = document.getElementById("startPauseBtn");
+const resetBtn = document.getElementById("resetBtn");
+const modeButtons = document.querySelectorAll(".mode");
 
-    const timerDisplay = document.getElementById("timer");
-    const startPauseBtn = document.getElementById("startPauseBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const pomodoroBtn = document.getElementById("modeFocus");
-    const shortBreakBtn = document.getElementById("modeShort");
-    const longBreakBtn = document.getElementById("modeLong");
-    const modeButtons = [pomodoroBtn, shortBreakBtn, longBreakBtn];
+// Settings panel
+const focusInput = document.getElementById("focusInput");
+const shortInput = document.getElementById("shortInput");
+const longInput = document.getElementById("longInput");
+const applyBtn = document.getElementById("applyBtn");
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.querySelector(".nav nav a");
+const closeSettings = document.getElementById("closeSettings");
 
-    const focusInput = document.getElementById("focusInput");
-    const shortInput = document.getElementById("shortInput");
-    const longInput = document.getElementById("longInput");
-    const applyBtn = document.getElementById("applyBtn");
+// ------------------- UPDATE DISPLAY -------------------
+function updateDisplay(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    timerDisplay.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
 
-    function updateDisplay() {
-        const m = Math.floor(timeLeft / 60);
-        const s = timeLeft % 60;
-        timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+// ------------------- BACKEND FUNCTIONS -------------------
+async function startTimerBackend(mode, duration) {
+    await fetch("http://127.0.0.1:8000/api/start", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({mode, duration, rounds: 1})
+    });
+}
+
+async function pauseTimerBackend() {
+    await fetch("http://127.0.0.1:8000/api/pause", { method: "POST" });
+}
+
+async function resetTimerBackend(mode, duration) {
+    const res = await fetch("http://127.0.0.1:8000/api/reset", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({mode, duration, rounds: 1})
+    });
+    const data = await res.json();
+    return data.remaining_seconds;
+}
+
+async function getRemainingTime() {
+    try {
+        const res = await fetch("http://127.0.0.1:8000/api/remaining");
+        const data = await res.json();
+        return data.remaining_seconds;
+    } catch (err) {
+        console.error("Error fetching remaining time:", err);
+        return 0;
     }
+}
 
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                updateDisplay();
-            } else {
-                clearInterval(timerInterval);
-                isRunning = false;
-                startPauseBtn.textContent = "Start";
-            }
-        }, 1000);
+// ------------------- TIMER UPDATE LOOP -------------------
+async function updateTimer() {
+    const seconds = await getRemainingTime();
+    updateDisplay(seconds);
+
+    if (seconds <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        startPauseBtn.textContent = "Start";
     }
+}
 
-    function pauseTimer() {
+// ------------------- START / PAUSE -------------------
+startPauseBtn.addEventListener("click", async () => {
+    const activeMode = document.querySelector(".mode.active");
+    const mode = activeMode.textContent.toLowerCase().replace(" ", "_");
+    const duration = parseInt(activeMode.dataset.min);
+
+    if (!isRunning) {
+        await startTimerBackend(mode, duration);
+        isRunning = true;
+        startPauseBtn.textContent = "Pause";
+
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    } else {
+        await pauseTimerBackend();
+        isRunning = false;
+        startPauseBtn.textContent = "Start";
         clearInterval(timerInterval);
     }
+});
 
-    startPauseBtn.addEventListener("click", () => {
-        if (!isRunning) {
-            startTimer();
-            startPauseBtn.textContent = "Pause";
-            isRunning = true;
-        } else {
-            pauseTimer();
-            startPauseBtn.textContent = "Start";
-            isRunning = false;
-        }
-    });
+// ------------------- RESET -------------------
+resetBtn.addEventListener("click", async () => {
+    const activeMode = document.querySelector(".mode.active");
+    const mode = activeMode.textContent.toLowerCase().replace(" ", "_");
+    const duration = parseInt(activeMode.dataset.min);
 
-    resetBtn.addEventListener("click", () => {
-        pauseTimer();
+    const remaining = await resetTimerBackend(mode, duration);
+
+    clearInterval(timerInterval);
+    isRunning = false;
+    startPauseBtn.textContent = "Start";
+    updateDisplay(remaining);
+});
+
+// ------------------- MODE BUTTONS -------------------
+modeButtons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+        modeButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        clearInterval(timerInterval);
         isRunning = false;
         startPauseBtn.textContent = "Start";
 
-        const activeMode = document.querySelector(".mode.active");
-        timeLeft = parseInt(activeMode.dataset.min) * 60;
-
-        updateDisplay();
+        const mode = btn.textContent.toLowerCase().replace(" ", "_");
+        const duration = parseInt(btn.dataset.min);
+        const remaining = await resetTimerBackend(mode, duration);
+        updateDisplay(remaining);
     });
+});
 
-    modeButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            modeButtons.forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
+// ------------------- SETTINGS PANEL -------------------
+openSettings.addEventListener("click", e => {
+    e.preventDefault();
+    settingsPanel.classList.add("open");
+});
+closeSettings.addEventListener("click", () => {
+    settingsPanel.classList.remove("open");
+});
 
-            pauseTimer();
-            isRunning = false;
-            startPauseBtn.textContent = "Start";
+// ------------------- CUSTOM TIMER -------------------
+applyBtn.addEventListener("click", async () => {
+    // Ambil nilai terbaru dari input
+    const focusMinutes = parseInt(focusInput.value);
+    const shortMinutes = parseInt(shortInput.value);
+    const longMinutes = parseInt(longInput.value);
 
-            timeLeft = parseInt(btn.dataset.min) * 60;
-            updateDisplay();
-        });
-    });
+    // Update data-min tombol mode
+    document.querySelector('.mode[data-min="25"]').dataset.min = focusMinutes;
+    document.querySelector('.mode[data-min="5"]').dataset.min = shortMinutes;
+    document.querySelector('.mode[data-min="10"]').dataset.min = longMinutes;
 
-    // SETTINGS PANEL
-    const settingsPanel = document.getElementById("settingsPanel");
-    const openSettings = document.querySelector(".nav nav a");
-    const closeSettings = document.getElementById("closeSettings");
+    // Reset timer sesuai mode aktif
+    const activeMode = document.querySelector(".mode.active");
+    const mode = activeMode.textContent.toLowerCase().replace(" ", "_");
+    const duration = parseInt(activeMode.dataset.min);
 
-    openSettings.addEventListener("click", (e) => {
-        e.preventDefault();
-        settingsPanel.classList.add("open");
-    });
+    // Hentikan timer frontend & backend sebelum update
+    clearInterval(timerInterval);
+    isRunning = false;
+    startPauseBtn.textContent = "Start";
 
-    closeSettings.addEventListener("click", () => {
-        settingsPanel.classList.remove("open");
-    });
+    // Reset backend timer
+    try {
+        const remaining = await resetTimerBackend(mode, duration);
+        updateDisplay(remaining);
+    } catch (err) {
+        console.error("Gagal reset backend timer:", err);
+    }
 
-    // UNTUK CUSTOM TIMER
-    applyBtn.addEventListener("click", () => {
-        focusMinutes = parseInt(focusInput.value);
-        shortMinutes = parseInt(shortInput.value);
-        longMinutes = parseInt(longInput.value);
+    // Tutup panel settings
+    settingsPanel.classList.remove("open");
+});
 
-        // Update data-min pada tombol mode
-        document.querySelector('.mode[data-min="25"]').dataset.min = focusMinutes;
-        document.querySelector('.mode[data-min="5"]').dataset.min = shortMinutes;
-        document.querySelector('.mode[data-min="10"]').dataset.min = longMinutes;
-
-        // Reset timer sesuai mode aktif
-        const active = document.querySelector(".mode.active");
-        timeLeft = parseInt(active.dataset.min) * 60;
-
-        pauseTimer();
-        isRunning = false;
-        startPauseBtn.textContent = "Start";
-        updateDisplay();
-
-        // Tutup panel setelah apply
-        settingsPanel.classList.remove("open");
-    });
-
-    updateDisplay();
-
+// ------------------- INITIAL RENDER -------------------
+(async () => {
+    const remaining = await getRemainingTime();
+    updateDisplay(remaining);
+})();
