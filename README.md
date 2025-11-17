@@ -21,13 +21,10 @@ Tools dan Bahasa Yang Digunakan
 Fitur Utama
 
 - Timer Fokus
-Hitung mundur untuk sesi kerja agar fokus tetap terjaga.
+Hitung mundur untuk sesi kerja agar fokus tetap terjaga
 
 - Short Break / Long Break
-Mode istirahat pendek & panjang agar ritme kerja lebih seimbang.
-
-- UI Modern & Estetis
-Desain ungu–hitam futuristik dengan efek glassmorphism.
+Mode istirahat pendek & panjang agar ritme kerja lebih seimbang
 
 - Kontrol Cepat
-Start, Pause, dan Reset dalam satu klik.
+Start, Pause, dan Reset dalam satu klik
