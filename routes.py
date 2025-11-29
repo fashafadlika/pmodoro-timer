@@ -6,6 +6,7 @@ router = APIRouter()
 
 @router.post("/start")
 def start_pomodoro(settings: PomodoroSettings):
+    # Kirim duration hanya jika provided, biarkan None untuk resume
     timer.start(settings.duration)
     return {"status": "started"}
 
