@@ -303,3 +303,15 @@ body {
     justify-content: space-between;
     margin-top: 10px;
 }
+
+/* mwnghilangkan panah spin button di Chrome, Safari, Edge, Opera */
+.settings-content input[type="number"]::-webkit-outer-spin-button,
+.settings-content input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* menghilangkan panah di Firefox */
+.settings-content input[type="number"] {
+    -moz-appearance: textfield;
+}
