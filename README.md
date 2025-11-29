@@ -31,8 +31,11 @@ Start, Pause, dan Reset dalam satu klik
 
 Cara Install
 - pastikan sudah download python
+  
 - download semua file di repo
+  
 - download uvicorn dan fastAPI (pake terminal aj di vscode)
   pip install uvicorn
   pip install fastapi
+  
 - buka file run_app (buka pake python)
