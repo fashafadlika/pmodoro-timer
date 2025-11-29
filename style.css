@@ -209,6 +209,7 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 999;
+    backdrop-filter: blur(4px);
 }
 
 .settings-panel.open {
@@ -216,7 +217,7 @@ body {
 }
 
 .settings-content {
-    background: rgba(0,0,0,0.9);
+    background: #2b213a;
     padding: 20px;
     border-radius: 16px;
     width: 300px;
@@ -224,6 +225,77 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #4a3b69;
+}
+
+.settings-content h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #d1ccc0;
+    font-size: 1.5rem;
+}
+
+.settings-content label {
+    display: flex;       
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.settings-content input[type="number"] {
+    background-color: #3e3354;
+    border: 1px solid #5c4e7a;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    width: 60px;
+    text-align: center;
+    outline: none;
+    font-weight: bold;
+}
+
+.settings-content input[type="number"]:focus {
+    border-color: #9c88ff;
+    box-shadow: 0 0 5px rgba(156, 136, 255, 0.3);
+}
+
+.settings-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.settings-buttons button {
+    padding: 10px 25px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s all ease;
+}
+
+#applyBtn {
+    background-color: #6c5ce7;
+    color: white;
+}
+#applyBtn:hover {
+    background-color: #5f4dd0;
+    transform: scale(1.05);
+}
+
+#closeSettings {
+    background-color: transparent;
+    border: 2px solid #a29bfe;
+    color: #a29bfe;
+}
+#closeSettings:hover {
+    background-color: #a29bfe;
+    color: #2d2440;
 }
 
 .settings-buttons {
