@@ -3,7 +3,7 @@ PMODORO — Productive MOtivation DO ROutine
 Pmodoro adalah aplikasi timer sederhana yang dibuat untuk membantu kamu fokus bekerja atau belajar dengan metode work–break cycle. Terinspirasi dari teknik Pomodoro, tetapi dibuat lebih ringan, modern, dan estetik.
 Aplikasi ini berjalan menggunakan HTML, CSS, JavaScript, dan dapat dijalankan sebagai aplikasi lokal atau dipublikasikan melalui GitHub Pages.
 
-Live Demo (Hanya tampilannya saja):
+UI PMODORO:
 https://fashafadlika.github.io/pmodoro-timer/
 
 Tools dan Bahasa Yang Digunakan
