@@ -1,6 +1,10 @@
 // ------------------- TIMER VARIABLES -------------------
 let timerInterval = null;
 let isRunning = false;
+let currentRound = 1;
+let totalRounds = 4;
+let totalSessions = 1;
+let isFocusMode = true;
 
 const timerDisplay = document.getElementById("timer");
 const startPauseBtn = document.getElementById("startPauseBtn");
@@ -15,6 +19,7 @@ const applyBtn = document.getElementById("applyBtn");
 const settingsPanel = document.getElementById("settingsPanel");
 const openSettings = document.querySelector(".nav a");
 const closeSettings = document.getElementById("closeSettings");
+const roundsDisplay = document.getElementById("roundsDisplay");
 
 // ------------------- UPDATE DISPLAY -------------------
 function updateDisplay(seconds) {
@@ -171,6 +176,11 @@ applyBtn.addEventListener("click", async () => {
     const shortMinutes = parseInt(shortInput.value);
     const longMinutes = parseInt(longInput.value);
 
+    const roundsInput = document.getElementById("rounds");
+    if(roundsInput) {
+        totalRounds = parseInt(roundsInput.value);
+    }
+
     modeButtons[0].dataset.min = focusMinutes;
     modeButtons[1].dataset.min = shortMinutes;
     modeButtons[2].dataset.min = longMinutes;
@@ -190,3 +200,83 @@ applyBtn.addEventListener("click", async () => {
     const remaining = await getRemainingTime();
     updateDisplay(remaining);
 })();
+
+async function handleAutoRound() {
+    clearInterval(timerInterval);
+
+    const activeIndex = Array.from(modeButtons).findIndex(btn => btn.classList.contains("active"));
+
+    // pindah mode
+    let nextModeIndex = 0; 
+
+    if (activeIndex === 0) { 
+        console.log(`Ronde ${currentRound} selesai.`);
+        
+        if (currentRound < totalRounds) {
+            nextModeIndex = 1;
+            updateRoundDisplay();
+            alert("Fokus selesai! Waktunya istirahat pendek.");
+        } else {
+            nextModeIndex = 2;
+            currentRound = 0;
+            updateRoundDisplay();
+            alert("Selamat! Semua ronde selesai. Istirahat panjang!");
+        }
+    } else {
+        nextModeIndex = 0;
+        if (currentRound === 0) currentRound = 1; 
+        else currentRound++;
+        totalSessions++;
+        document.getElementById("totalDisplay").textContent = `#${totalSessions}`;
+        updateRoundDisplay();
+        alert("Istirahat selesai! Kembali fokus.");
+        
+    }
+
+    // --- EKSEKUSI PERPINDAHAN ---
+    modeButtons.forEach(b => b.classList.remove("active"));
+    modeButtons[nextModeIndex].classList.add("active");
+
+    const newDuration = parseInt(modeButtons[nextModeIndex].dataset.min);
+
+
+    const success = await startTimerBackend(newDuration);
+    
+    if (success) {
+        isRunning = true;
+        startPauseBtn.textContent = "Pause";
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    }
+}
+
+// ------------------- TIMER UPDATE LOOP -------------------
+async function updateTimer() {
+    const seconds = await getRemainingTime();
+    updateDisplay(seconds);
+
+    // --- pindah ronde ---
+    if (seconds <= 0 && isRunning) {
+        isRunning = false; 
+        clearInterval(timerInterval);
+        await handleAutoRound();
+    }
+}
+
+//------------ ROUND DISPLAY -------------
+function updateRoundDisplay() {
+    const roundDisplay = document.getElementById("roundDisplay");
+    const totalDisplay = document.getElementById("totalDisplay");
+
+    if (roundDisplay) {
+        if (currentRound === 0) {
+            roundDisplay.textContent = "-";
+        } else {
+            roundDisplay.textContent = `#${currentRound}`; 
+        }
+    }
+    if (totalDisplay) {
+        totalDisplay.textContent = `#${totalSessions}`;
+    }
+
+}

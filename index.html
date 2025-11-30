@@ -35,10 +35,23 @@
                     <button class="mode" data-min="10">Long Break</button>
                 </div>
             </div>
+
+            <div class="stat-box">
+                <span class="stat-label">Ronde</span>
+                <span id="roundDisplay">#1</span>
+            </div>
+
+            <div class="stat-divider"></div>
+
+            <div class="stat-box">
+                <span class="stat-label">Total</span>
+                <span id="totalDisplay">#1</span>
+            </div>
         </div>
 
         <div class="right-graphic"></div>
     </main>
+    
 
     <div id="settingsPanel" class="settings-panel">
         <div class="settings-content">
@@ -62,7 +75,7 @@
 
             <label>
                 Rounds:
-                <input id="rounds" type="number" min="1" max="12" value="4">
+                <input id="rounds" type="number" min="1" max="12" value="4" disabled>
             </label>
 
             <div class="settings-buttons">

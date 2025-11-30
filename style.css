@@ -315,3 +315,46 @@ body {
 .settings-content input[type="number"] {
     -moz-appearance: textfield;
 }
+
+/* Container Utama Stats */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 25px;
+    background-color: rgba(255, 255, 255, 0.05); /* Latar agak transparan */
+    padding: 10px 20px;
+    border-radius: 15px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    min-width: 60px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #a29bfe;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+#roundDisplay, #totalDisplay {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
