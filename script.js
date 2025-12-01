@@ -227,7 +227,7 @@ async function handleAutoRound() {
         if (currentRound === 0) currentRound = 1; 
         else currentRound++;
         totalSessions++;
-        document.getElementById("totalDisplay").textContent = `#${totalSessions}`;
+        document.getElementById("roundDisplay").textContent = `#${totalSessions}`;
         updateRoundDisplay();
         alert("Istirahat selesai! Kembali fokus.");
         
@@ -266,17 +266,12 @@ async function updateTimer() {
 //------------ ROUND DISPLAY -------------
 function updateRoundDisplay() {
     const roundDisplay = document.getElementById("roundDisplay");
-    const totalDisplay = document.getElementById("totalDisplay");
-
     if (roundDisplay) {
         if (currentRound === 0) {
             roundDisplay.textContent = "-";
         } else {
-            roundDisplay.textContent = `#${currentRound}`; 
+            roundDisplay.textContent = `#${totalSessions}`; 
         }
-    }
-    if (totalDisplay) {
-        totalDisplay.textContent = `#${totalSessions}`;
     }
 
 }
