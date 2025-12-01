@@ -14,7 +14,7 @@ Tools dan Bahasa Yang Digunakan
 
 - JavaScript (timer logic)
 
-- Python (pywebview)
+- Python 
 
 - FastAPI
 
