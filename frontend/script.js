@@ -21,7 +21,7 @@ const openSettings = document.querySelector(".nav a");
 const closeSettings = document.getElementById("closeSettings");
 const roundsDisplay = document.getElementById("roundsDisplay");
 // ------------------- API RAILWAY -------------------
-const API_URL = "https://xxxxxx.up.railway.app";
+const API_URL = "pmodoro-timer-production.up.railway.app";
 
 fetch(`${API_URL}/api/data`)
 .then(r => r.json())
