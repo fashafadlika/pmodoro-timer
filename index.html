@@ -74,8 +74,12 @@
 
         </div>
     </div>
-
-    <script src="script.js"></script>
+    <script>
+        // Fix untuk static files di Railway
+        window.appBaseUrl = window.location.origin;
+    </script>
+    <script src="/script.js"></script>
 </body>
 
 </html>
+
