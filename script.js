@@ -31,11 +31,11 @@ function updateDisplay(seconds) {
 // ------------------- BACKEND FUNCTIONS -------------------
 async function getRemainingTime() {
     try {
-        const res = await fetch("/api/remaining");
+        const res = await fetch("/api/remaining");  
         const data = await res.json();
         return data.remaining_seconds;
     } catch (err) {
-        console.error("Error fetching remaining time:", err);
+        console.error("Error:", err);
         return 25 * 60;
     }
 }
@@ -261,5 +261,6 @@ function updateRoundDisplay() {
             roundDisplay.textContent = `#${totalSessions}`; 
         }
     }
+
 
 }
