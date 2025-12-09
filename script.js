@@ -28,21 +28,24 @@ function updateDisplay(seconds) {
     timerDisplay.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 }
 
+// ===== FIX: Base URL untuk API =====
+const API_BASE = window.location.origin;
+
 // ------------------- BACKEND FUNCTIONS -------------------
 async function getRemainingTime() {
     try {
-        const res = await fetch("/api/remaining");  
+        const res = await fetch(`${API_BASE}/api/remaining`);
         const data = await res.json();
         return data.remaining_seconds;
     } catch (err) {
-        console.error("Error:", err);
+        console.error("Error fetching remaining time:", err);
         return 25 * 60;
     }
 }
 
 async function startTimerBackend(duration = null) {
     try {
-        await fetch("/api/start", {
+        await fetch(`${API_BASE}/api/start`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ duration: duration })
@@ -264,3 +267,4 @@ function updateRoundDisplay() {
 
 
 }
+
