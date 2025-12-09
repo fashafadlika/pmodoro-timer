@@ -21,7 +21,7 @@ const openSettings = document.querySelector(".nav a");
 const closeSettings = document.getElementById("closeSettings");
 const roundsDisplay = document.getElementById("roundsDisplay");
 // ------------------- API RAILWAY -------------------
-const RAILWAY_API = "https://pmodoro-backend.up.railway.app";
+const RAILWAY_API = "pmodoro-timer-v2.up.railway.app";
 
 // ------------------- UPDATE DISPLAY -------------------
 function updateDisplay(seconds) {
@@ -263,5 +263,6 @@ function updateRoundDisplay() {
             roundDisplay.textContent = `#${totalSessions}`; 
         }
     }
+
 
 }
