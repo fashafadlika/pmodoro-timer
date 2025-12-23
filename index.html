@@ -7,73 +7,147 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="nav">
-        <div class="logo">Kelompok 5</div>
-        <nav>
-        <a href="#">Settings</a>
-        </nav>
-    </header>
 
-    <main class="hero">
-        <div class="left-vertical">Live Incredible Day</div>
+<!-- ================= NAVBAR ================= -->
+<header class="nav">
+    <div class="logo">Kelompok 5</div>
+    <nav>
+        <a href="#" id="openTasks">Tasks</a>
+        <a href="#" id="openSettings">Settings</a>
+    </nav>
+</header>
 
-        <div class="content">
-            <h1 class="title"><span class="big">PMODORO</span><span class="outline"></span></h1>
-            <p class="subtitle">Fokus 25 menit • Istirahat 5 menit</p>
+<!-- ================= TASK PANEL ================= -->
+<div id="taskPanel" class="tasks-panel">
+    <div class="tasks-content">
+        <h2>Tasks</h2>
 
-            <div class="card">
-                <div id="timer" class="timer">25:00</div>
+        <!-- INPUT TASK + RONDE -->
+        <div class="add-task">
+            <input type="text" id="taskInput" placeholder="Nama task..." />
 
-                <div class="controls">
-                    <button id="startPauseBtn" class="btn">Start</button>
-                    <button id="resetBtn" class="btn secondary">Reset</button>
-                </div>
+            <input 
+                type="number" 
+                id="taskRoundInput" 
+                min="1" 
+                value="1" 
+                title="Jumlah ronde"
+                style="width:70px;text-align:center"
+            />
 
-                <div class="modes">
-                    <button class="mode active" data-min="25">Pmodoro</button>
-                    <button class="mode" data-min="5">Short Break</button>
-                    <button class="mode" data-min="10">Long Break</button>
+            <button id="addTaskBtn">+</button>
+        </div>
+
+        <ul id="taskList" class="task-list"></ul>
+
+        <button id="closeTasks" class="btn secondary">Close</button>
+    </div>
+</div>
+
+<!-- ================= EDIT TASK MODAL ================= -->
+<div id="editTaskModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Task</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="editTaskName">Nama Task:</label>
+                <input type="text" id="editTaskName" class="modal-input" placeholder="Nama task...">
+            </div>
+            <div class="form-group">
+                <label for="editTaskRounds">Jumlah Ronde:</label>
+                <div class="round-controls">
+                    <button class="round-btn minus">-</button>
+                    <input type="number" id="editTaskRounds" class="modal-input" min="1" value="1">
+                    <button class="round-btn plus">+</button>
                 </div>
             </div>
+        </div>
+        <div class="modal-footer">
+            <button id="saveTaskBtn" class="btn">Simpan</button>
+            <button id="cancelEditBtn" class="btn secondary">Batal</button>
+        </div>
+    </div>
+</div>
 
-            <div class="stat-box">
-                <span class="stat-label">Ronde</span>
-                <span id="roundDisplay">#1</span>
+<!-- ================= MAIN ================= -->
+<main class="hero">
+    <div class="left-vertical">Productive MOtivation DO ROutine</div>
+
+    <div class="content">
+        <h1 class="title">
+            <span class="big">PMODORO</span>
+            <span class="outline"></span>
+        </h1>
+
+        <p class="subtitle">Fokus 25 menit • Istirahat 5 menit</p>
+
+        <div class="card">
+            <div id="timer" class="timer">25:00</div>
+
+            <div class="controls">
+                <button id="startPauseBtn" class="btn">Start</button>
+                <button id="resetBtn" class="btn secondary">Reset</button>
+            </div>
+
+            <div class="modes">
+                <button class="mode active" data-min="25">Pmodoro</button>
+                <button class="mode" data-min="5">Short Break</button>
+                <button class="mode" data-min="10">Long Break</button>
             </div>
         </div>
 
-        <div class="right-graphic"></div>
-    </main>
-    
-
-    <div id="settingsPanel" class="settings-panel">
-        <div class="settings-content">
-
-            <h2>Pengaturan Waktu</h2>
-
-            <label>
-                Focus (menit):
-                <input id="focusInput" type="number" min="1" max="120" value="25">
-            </label>
-
-            <label>
-                Short Break (menit):
-                <input id="shortInput" type="number" min="1" max="60" value="5">
-            </label>
-
-            <label>
-                Long Break (menit):
-                <input id="longInput" type="number" min="1" max="60" value="15">
-            </label>
-
-            <div class="settings-buttons">
-                <button id="applyBtn" class="btn">Apply</button>
-                <button id="closeSettings" class="btn secondary">Close</button>
+        <!-- ========== TASKS DISPLAY ========== -->
+        <div id="tasksDisplay" class="tasks-display">
+            <h3 class="tasks-title">Active Tasks</h3>
+            <div id="activeTasks" class="active-tasks">
+                <!-- Tasks akan muncul di sini -->
             </div>
+            <div id="taskProgress" class="task-progress">
+                <!-- Progress bar akan muncul di sini -->
+            </div>
+        </div>
 
+        <div class="stat-box">
+            <span class="stat-label">Ronde</span>
+            <span id="roundDisplay">#1</span>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="right-graphic"></div>
+</main>
+
+<!-- ================= SETTINGS PANEL ================= -->
+<div id="settingsPanel" class="settings-panel">
+    <div class="settings-content">
+
+        <h2>Pengaturan Waktu</h2>
+
+        <label>
+            Focus (menit):
+            <input id="focusInput" type="number" min="1" max="120" value="25">
+        </label>
+
+        <label>
+            Short Break (menit):
+            <input id="shortInput" type="number" min="1" max="60" value="5">
+        </label>
+
+        <label>
+            Long Break (menit):
+            <input id="longInput" type="number" min="1" max="60" value="15">
+        </label>
+
+        <div class="settings-buttons">
+            <button id="applyBtn" class="btn">Apply</button>
+            <button id="closeSettings" class="btn secondary">Close</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
