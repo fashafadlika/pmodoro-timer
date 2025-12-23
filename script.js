@@ -4,24 +4,16 @@ let isRunning = false;
 let currentRound = 1;
 let totalRounds = 4;
 let totalSessions = 1;
-let isFocusMode = true;
+let timerHasStarted = false;
+let isAutoSwitching = false;
 
 const timerDisplay = document.getElementById("timer");
 const startPauseBtn = document.getElementById("startPauseBtn");
 const resetBtn = document.getElementById("resetBtn");
 const modeButtons = document.querySelectorAll(".mode");
 
-// Settings panel
-const focusInput = document.getElementById("focusInput");
-const shortInput = document.getElementById("shortInput");
-const longInput = document.getElementById("longInput");
-const applyBtn = document.getElementById("applyBtn");
-const settingsPanel = document.getElementById("settingsPanel");
-const openSettings = document.querySelector(".nav a");
-const closeSettings = document.getElementById("closeSettings");
-const roundsDisplay = document.getElementById("roundsDisplay");
-// ------------------- API RAILWAY -------------------
-const RAILWAY_API = "pmodoro-timer-v2.up.railway.app";
+// ------------------- API URL LOKAL -------------------
+const LOCAL_API = "http://127.0.0.1:8000";
 
 // ------------------- UPDATE DISPLAY -------------------
 function updateDisplay(seconds) {
@@ -33,7 +25,7 @@ function updateDisplay(seconds) {
 // ------------------- BACKEND FUNCTIONS -------------------
 async function getRemainingTime() {
     try {
-        const res = await fetch(`${RAILWAY_API}/api/remaining`);
+        const res = await fetch(`${LOCAL_API}/api/remaining`);
         const data = await res.json();
         return data.remaining_seconds;
     } catch (err) {
@@ -44,10 +36,13 @@ async function getRemainingTime() {
 
 async function startTimerBackend(duration = null) {
     try {
-        await fetch(`${RAILWAY_API}/api/start`, {
+        const url = duration !== null 
+            ? `${LOCAL_API}/api/start?duration=${duration}`
+            : `${LOCAL_API}/api/start`;
+        
+        await fetch(url, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ duration: duration })
+            headers: {"Content-Type": "application/json"}
         });
         return true;
     } catch (err) {
@@ -58,7 +53,7 @@ async function startTimerBackend(duration = null) {
 
 async function pauseTimerBackend() {
     try {
-        await fetch(`${RAILWAY_API}/api/pause`, {
+        await fetch(`${LOCAL_API}/api/pause`, {
             method: "POST",
             headers: {"Content-Type": "application/json"}
         });
@@ -74,10 +69,9 @@ async function resetTimerBackend() {
         const activeMode = document.querySelector(".mode.active");
         const duration = parseInt(activeMode.dataset.min);
 
-        const res = await fetch(`${RAILWAY_API}/api/reset`, {
+        const res = await fetch(`${LOCAL_API}/api/reset?duration=${duration}`, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ duration: duration })
+            headers: {"Content-Type": "application/json"}
         });
         const data = await res.json();
         return data.remaining_seconds;
@@ -93,21 +87,82 @@ async function updateTimer() {
     const seconds = await getRemainingTime();
     updateDisplay(seconds);
 
-    if (seconds <= 0 && isRunning) {
+    if (seconds <= 0 && isRunning && !isAutoSwitching) {
         clearInterval(timerInterval);
         isRunning = false;
         startPauseBtn.textContent = "Start";
+        isAutoSwitching = true;
+        
+        // Langsung panggil handleAutoRound tanpa setTimeout
+        await handleAutoRound();
+        isAutoSwitching = false;
+    }
+}
+
+// ------------------- AUTO ROUND -------------------
+async function handleAutoRound() {
+    const activeIndex = Array.from(modeButtons).findIndex(btn => btn.classList.contains("active"));
+    let nextModeIndex = 0;
+    let message = "";
+
+    if (activeIndex === 0) { // Focus mode selesai
+        if (currentRound < totalRounds) {
+            nextModeIndex = 1; // Short break
+            currentRound++;
+            message = "Fokus selesai! Waktunya istirahat pendek.";
+        } else {
+            nextModeIndex = 2; // Long break
+            currentRound = 1;
+            message = "Selamat! Semua ronde selesai. Istirahat panjang!";
+        }
+    } else { // Break mode selesai
+        nextModeIndex = 0; // Kembali ke focus
+        totalSessions++;
+        document.getElementById("roundDisplay").textContent = `#${totalSessions}`;
+        message = "Istirahat selesai! Kembali fokus.";
+    }
+
+    // Tampilkan alert
+    if (message) {
+        alert(message);
+    }
+
+    // Ganti mode
+    modeButtons.forEach(b => b.classList.remove("active"));
+    modeButtons[nextModeIndex].classList.add("active");
+
+    // Reset timer dengan mode baru
+    const newDuration = parseInt(modeButtons[nextModeIndex].dataset.min);
+    await resetTimerBackend();
+    
+    // Update display dengan waktu baru
+    updateDisplay(newDuration * 60);
+    
+    // LANGSUNG START TIMER BARU OTOMATIS
+    const success = await startTimerBackend(newDuration);
+    if (success) {
+        isRunning = true;
+        startPauseBtn.textContent = "Pause";
+        timerHasStarted = true;
+        timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Panggil sekali untuk update display
     }
 }
 
 // ------------------- START / PAUSE -------------------
 startPauseBtn.addEventListener("click", async () => {
     if (!isRunning) {
-        // Start baru - kirim duration
-        const activeMode = document.querySelector(".mode.active");
-        const duration = parseInt(activeMode.dataset.min);
+        // START atau RESUME
+        let sendDuration = null;
         
-        const success = await startTimerBackend(duration);
+        // Hanya kirim duration jika belum pernah start
+        if (!timerHasStarted) {
+            const activeMode = document.querySelector(".mode.active");
+            sendDuration = parseInt(activeMode.dataset.min);
+            timerHasStarted = true;
+        }
+        
+        const success = await startTimerBackend(sendDuration);
         if (success) {
             isRunning = true;
             startPauseBtn.textContent = "Pause";
@@ -115,7 +170,7 @@ startPauseBtn.addEventListener("click", async () => {
             updateTimer();
         }
     } else {
-        // Pause - tidak kirim duration
+        // PAUSE
         const success = await pauseTimerBackend();
         if (success) {
             isRunning = false;
@@ -132,7 +187,13 @@ resetBtn.addEventListener("click", async () => {
     clearInterval(timerInterval);
     isRunning = false;
     startPauseBtn.textContent = "Start";
+    timerHasStarted = false;
     updateDisplay(remaining);
+    
+    // Reset round counter
+    currentRound = 1;
+    totalSessions = 1;
+    document.getElementById("roundDisplay").textContent = "#1";
 });
 
 // ------------------- MODE BUTTONS -------------------
@@ -144,13 +205,27 @@ modeButtons.forEach(btn => {
         clearInterval(timerInterval);
         isRunning = false;
         startPauseBtn.textContent = "Start";
+        timerHasStarted = false;
 
         const remaining = await resetTimerBackend();
         updateDisplay(remaining);
+        
+        // Reset round counter saat ganti mode manual
+        currentRound = 1;
+        totalSessions = 1;
+        document.getElementById("roundDisplay").textContent = "#1";
     });
 });
 
 // ------------------- SETTINGS PANEL -------------------
+const focusInput = document.getElementById("focusInput");
+const shortInput = document.getElementById("shortInput");
+const longInput = document.getElementById("longInput");
+const applyBtn = document.getElementById("applyBtn");
+const settingsPanel = document.getElementById("settingsPanel");
+const openSettings = document.querySelector(".nav a");
+const closeSettings = document.getElementById("closeSettings");
+
 openSettings.addEventListener("click", e => {
     e.preventDefault();
     settingsPanel.classList.add("open");
@@ -166,11 +241,6 @@ applyBtn.addEventListener("click", async () => {
     const shortMinutes = parseInt(shortInput.value);
     const longMinutes = parseInt(longInput.value);
 
-    const roundsInput = document.getElementById("rounds");
-    if(roundsInput) {
-        totalRounds = parseInt(roundsInput.value);
-    }
-
     modeButtons[0].dataset.min = focusMinutes;
     modeButtons[1].dataset.min = shortMinutes;
     modeButtons[2].dataset.min = longMinutes;
@@ -178,9 +248,15 @@ applyBtn.addEventListener("click", async () => {
     clearInterval(timerInterval);
     isRunning = false;
     startPauseBtn.textContent = "Start";
+    timerHasStarted = false;
 
     const remaining = await resetTimerBackend();
     updateDisplay(remaining);
+    
+    // Reset round counter
+    currentRound = 1;
+    totalSessions = 1;
+    document.getElementById("roundDisplay").textContent = "#1";
 
     settingsPanel.classList.remove("open");
 });
@@ -190,79 +266,3 @@ applyBtn.addEventListener("click", async () => {
     const remaining = await getRemainingTime();
     updateDisplay(remaining);
 })();
-
-async function handleAutoRound() {
-    clearInterval(timerInterval);
-
-    const activeIndex = Array.from(modeButtons).findIndex(btn => btn.classList.contains("active"));
-
-    // pindah mode
-    let nextModeIndex = 0; 
-
-    if (activeIndex === 0) { 
-        console.log(`Ronde ${currentRound} selesai.`);
-        
-        if (currentRound < totalRounds) {
-            nextModeIndex = 1;
-            updateRoundDisplay();
-            alert("Fokus selesai! Waktunya istirahat pendek.");
-        } else {
-            nextModeIndex = 2;
-            currentRound = 0;
-            updateRoundDisplay();
-            alert("Selamat! Semua ronde selesai. Istirahat panjang!");
-        }
-    } else {
-        nextModeIndex = 0;
-        if (currentRound === 0) currentRound = 1; 
-        else currentRound++;
-        totalSessions++;
-        document.getElementById("roundDisplay").textContent = `#${totalSessions}`;
-        updateRoundDisplay();
-        alert("Istirahat selesai! Kembali fokus.");
-        
-    }
-
-    // --- EKSEKUSI PERPINDAHAN ---
-    modeButtons.forEach(b => b.classList.remove("active"));
-    modeButtons[nextModeIndex].classList.add("active");
-
-    const newDuration = parseInt(modeButtons[nextModeIndex].dataset.min);
-
-
-    const success = await startTimerBackend(newDuration);
-    
-    if (success) {
-        isRunning = true;
-        startPauseBtn.textContent = "Pause";
-        timerInterval = setInterval(updateTimer, 1000);
-        updateTimer();
-    }
-}
-
-// ------------------- TIMER UPDATE LOOP -------------------
-async function updateTimer() {
-    const seconds = await getRemainingTime();
-    updateDisplay(seconds);
-
-    // --- pindah ronde ---
-    if (seconds <= 0 && isRunning) {
-        isRunning = false; 
-        clearInterval(timerInterval);
-        await handleAutoRound();
-    }
-}
-
-//------------ ROUND DISPLAY -------------
-function updateRoundDisplay() {
-    const roundDisplay = document.getElementById("roundDisplay");
-    if (roundDisplay) {
-        if (currentRound === 0) {
-            roundDisplay.textContent = "-";
-        } else {
-            roundDisplay.textContent = `#${totalSessions}`; 
-        }
-    }
-
-
-}
