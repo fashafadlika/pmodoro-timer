@@ -20,6 +20,8 @@ const settingsPanel = document.getElementById("settingsPanel");
 const openSettings = document.querySelector(".nav a");
 const closeSettings = document.getElementById("closeSettings");
 const roundsDisplay = document.getElementById("roundsDisplay");
+// ------------------- API RAILWAY -------------------
+const RAILWAY_API = "pmodoro-timer-v2.up.railway.app";
 
 // ------------------- UPDATE DISPLAY -------------------
 function updateDisplay(seconds) {
@@ -28,24 +30,21 @@ function updateDisplay(seconds) {
     timerDisplay.textContent = `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
 }
 
-// ===== FIX: Base URL untuk API =====
-const API_BASE = window.location.origin;
-
 // ------------------- BACKEND FUNCTIONS -------------------
 async function getRemainingTime() {
     try {
-        const res = await fetch(`${API_BASE}/api/remaining`);
+        const res = await fetch(`${RAILWAY_API}/api/remaining`);
         const data = await res.json();
         return data.remaining_seconds;
     } catch (err) {
-        console.error("Error fetching remaining time:", err);
+        console.error("Error:", err);
         return 25 * 60;
     }
 }
 
 async function startTimerBackend(duration = null) {
     try {
-        await fetch(`${API_BASE}/api/start`, {
+        await fetch(`${RAILWAY_API}/api/start`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ duration: duration })
@@ -59,7 +58,7 @@ async function startTimerBackend(duration = null) {
 
 async function pauseTimerBackend() {
     try {
-        await fetch("/api/pause", {
+        await fetch(`${RAILWAY_API}/api/pause`, {
             method: "POST",
             headers: {"Content-Type": "application/json"}
         });
@@ -75,7 +74,7 @@ async function resetTimerBackend() {
         const activeMode = document.querySelector(".mode.active");
         const duration = parseInt(activeMode.dataset.min);
 
-        const res = await fetch("/api/reset", {
+        const res = await fetch(`${RAILWAY_API}/api/reset`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ duration: duration })
@@ -267,4 +266,3 @@ function updateRoundDisplay() {
 
 
 }
-
