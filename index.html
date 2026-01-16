@@ -12,10 +12,35 @@
 <header class="nav">
     <div class="logo">Kelompok 5</div>
     <nav>
+        <a href="#" id="openHistory">History</a>
         <a href="#" id="openTasks">Tasks</a>
         <a href="#" id="openSettings">Settings</a>
     </nav>
 </header>
+
+<!-- ================= History PANEL ================= -->
+<div id="historyPanel" class="history-panel">
+    <div class="history-content report-mode">
+        <div class="history-header">
+            <h2>Detail Report</h2>
+            <div class="history-actions">
+                <span id="totalHoursDisplay" class="total-hours">0.0 hrs</span>
+                <button id="clearHistoryBtn" title="Clear Data">🗑️</button>
+            </div>
+        </div>
+        
+        <div class="report-header">
+            <span class="col-time">Waktu</span>
+            <span class="col-task">Task</span>
+            <span class="col-duration">Durasi</span>
+        </div>
+
+        <div id="historyList" class="history-list report-list">
+            </div>
+
+        <button id="closeHistory" class="btn secondary" style="margin-top: 15px;">Close</button>
+    </div>
+</div>
 
 <!-- ================= TASK PANEL ================= -->
 <div id="taskPanel" class="tasks-panel">

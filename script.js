@@ -26,6 +26,17 @@ const saveTaskBtn = document.getElementById("saveTaskBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const closeModalBtn = document.querySelector(".close-modal");
 
+// ================= HISTORY FEATURE =================
+const HISTORY_KEY = "pmodoro_detail_report";
+const historyPanel = document.getElementById("historyPanel");
+const openHistoryBtn = document.getElementById("openHistory");
+const closeHistoryBtn = document.getElementById("closeHistory");
+const historyList = document.getElementById("historyList");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+const totalHoursDisplay = document.getElementById("totalHoursDisplay");
+
+let sessionStartTime = null;
+
 // ================= API =================
 const LOCAL_API = "http://127.0.0.1:8000";
 
@@ -208,6 +219,8 @@ async function updateTimer() {
 async function handleAutoRound() {
     const activeIndex =
         [...modeButtons].findIndex(b => b.classList.contains("active"));
+        const currentDur = parseInt(modeButtons[activeIndex].dataset.min);
+        saveSession(currentDur, true);
     let next = 0;
 
     // ================= FOCUS SELESAI =================
@@ -256,6 +269,8 @@ startPauseBtn.onclick = async () => {
         if (!timerHasStarted) {
             d = parseInt(document.querySelector(".mode.active").dataset.min);
             timerHasStarted = true;
+
+            sessionStartTime = new Date();
         }
         await startTimerBackend(d);
         isRunning = true;
@@ -455,7 +470,7 @@ document.querySelectorAll('.round-btn').forEach(btn => {
     });
 });
 
-// 🔥 FIX BENAR: 1 FOCUS = -1
+
 function reduceTaskRound() {
     if (taskReducedThisFocus) return;
 
@@ -476,3 +491,109 @@ loadTasks();
 setInterval(() => {
     displayActiveTasks();
 }, 5000);
+
+//========== History ========== 
+const fmtTime = (date) => {
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+};
+
+const fmtDate = (date) => {
+    return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+function saveSession(durationMinutes, completed = true) {
+    if (!sessionStartTime) return; 
+
+    const now = new Date();
+    const activeModeBtn = document.querySelector(".mode.active");
+    const modeLabel = activeModeBtn.textContent;
+    
+    let labelClass = "lbl-focus";
+    if (modeLabel.includes("Short")) labelClass = "lbl-short";
+    if (modeLabel.includes("Long")) labelClass = "lbl-long";
+
+
+    let taskName = "-";
+    if (modeLabel === "Pmodoro") {
+        const tasks = JSON.parse(localStorage.getItem(TASK_KEY)) || [];
+        taskName = tasks.length > 0 ? tasks[0].text : "No Active Task";
+    } else {
+        taskName = "Istirahat";
+    }
+
+    const sessionData = {
+        id: Date.now(),
+        dateStr: fmtDate(sessionStartTime),
+        timeRange: `${fmtTime(sessionStartTime)} - ${fmtTime(now)}`,
+        label: modeLabel,
+        lblClass: labelClass,
+        task: taskName,
+        duration: durationMinutes,
+        completed: completed
+    };
+
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    history.unshift(sessionData); 
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+
+    sessionStartTime = null;
+    renderHistory();
+}
+
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    historyList.innerHTML = "";
+    
+    if (history.length === 0) {
+        historyList.innerHTML = '<div style="text-align:center; padding:20px; color:#aaa;">No activity yet. Start focusing!</div>';
+        totalHoursDisplay.textContent = "0.0 hrs";
+        return;
+    }
+
+    const totalMinutes = history.reduce((acc, curr) => acc + curr.duration, 0);
+    totalHoursDisplay.textContent = (totalMinutes / 60).toFixed(1) + " hrs";
+
+    const grouped = history.reduce((groups, item) => {
+        const date = item.dateStr;
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(item);
+        return groups;
+    }, {});
+
+    Object.keys(grouped).forEach(date => {
+        const dateHeader = document.createElement("div");
+        dateHeader.className = "date-header";
+        dateHeader.textContent = date;
+        historyList.appendChild(dateHeader);
+
+        grouped[date].forEach(item => {
+            const row = document.createElement("div");
+            row.className = "report-row";
+            row.innerHTML = `
+                <div class="col-time">${item.timeRange}</div>
+                <div class="col-task">
+                    <span class="task-name-log">${item.task}</span>
+                    <span class="task-label-log ${item.lblClass}">${item.label}</span>
+                </div>
+                <div class="col-duration">${item.duration}m</div>
+            `;
+            historyList.appendChild(row);
+        });
+    });
+}
+
+openHistoryBtn.onclick = (e) => {
+    e.preventDefault();
+    historyPanel.classList.add("open");
+    renderHistory();
+};
+
+closeHistoryBtn.onclick = () => historyPanel.classList.remove("open");
+
+clearHistoryBtn.onclick = () => {
+    if(confirm("Hapus semua history report?")) {
+        localStorage.removeItem(HISTORY_KEY);
+        renderHistory();
+    }
+};
+renderHistory();
